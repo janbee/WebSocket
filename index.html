@@ -79,7 +79,7 @@
 </body>
 
 <script type="text/javascript">
-    const ws = new WebSocket('ws://192.168.1.67:3000/ws', 'client');
+    const ws = new WebSocket('wss://demo.piesocket.com/v3/talpak?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV', 'client');
     const content = document.getElementById('content');
     ws.onmessage = (message) => {
         const data = JSON.parse(message.data);

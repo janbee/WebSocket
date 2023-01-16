@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Monitor</title>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+  <script
+    src="https://code.jquery.com/jquery-3.6.3.slim.min.js"
+    integrity="sha256-ZwqZIVdD3iXNyGHbSYdsmWP//UBokj2FHAxKuSBKDSo="
+    crossorigin="anonymous"></script>
+  <style>
+
+      body {
+          font-size: 10px;
+      }
+
+      #content > div{
+          /*//max-height: 200px;*/
+          overflow: auto;
+          margin-bottom: 15px;
+          position: relative;
+      }
+
+
+      body {
+          background-color: #fafafa;
+      }
+
+      table {
+          font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+          border-collapse: collapse;
+          width: 100%;
+      }
+
+      table thead{
+          position: sticky;
+          top: 0;
+      }
+
+      table td, table th {
+          border: 1px solid #ddd;
+          padding: 8px;
+      }
+
+      table tr:nth-child(even) {
+          background-color: #f2f2f2;
+      }
+
+      tr.green {
+          background: #b5ffb8 !important;
+      }
+
+      tr.red {
+          background: #ffc7c7 !important;
+      }
+
+      td.blue {
+          background: #b9d2ff !important;
+      }
+
+      tr.yellow {
+          background: #fff4c8 !important;
+      }
+
+
+      table th {
+          padding-top: 12px;
+          padding-bottom: 12px;
+          text-align: left;
+          background-color: #4CAF50;
+          color: white;
+      }
+  </style>
+</head>
+<body>
+<div id="content">
+
+</div>
+</body>
+
+<script type="text/javascript">
+    const ws = new WebSocket('ws://192.168.1.67:3000/ws', 'client');
+    const content = document.getElementById('content');
+    ws.onmessage = (message) => {
+        const data = JSON.parse(message.data);
+
+        console.log('gaga-------------------------------------', data);
+        Object.keys(data).forEach(item => {
+            const el = document.getElementById(item);
+            if (!el) {
+                const div = document.createElement('div');
+                div.setAttribute("id", item);
+                content.appendChild(div);
+            } else {
+
+                if (data[item].length) {
+                    el.innerHTML = `<table>
+                      <thead><tr><th>${Object.keys(data[item][0]).join('</th><th>')}</th></tr></thead>
+                      <tbody><tr><td>${data[item].map(e => Object.values(e).join('</td><td >')).join('<tr><td>')}</td></tr>
+                    </table>`
+                }
+
+            }
+        })
+
+        $('#moneyLines tr:contains("winning")').addClass('green');
+        $('#moneyLines tr:contains("losing")').addClass('red');
+        $('#moneyLines tr:contains("(0) points")').addClass('yellow');
+
+
+        $('#moneyLines tr:not(.green) td:nth-child(5)').addClass('rate');
+        $('#moneyLines tr:not(.green) td:nth-child(6)').addClass('rate');
+
+        $('#settledBets tr:contains("LOSE")').addClass('red');
+
+    };
+
+    ws.onerror = (error) => {
+        console.log('WebSocket error: ' + error);
+    };
+</script>
+
+</html>
